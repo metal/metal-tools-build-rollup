@@ -6,7 +6,7 @@ var consume = require('stream-consume');
 var merge = require('merge');
 var vfs = require('vinyl-fs');
 
-module.exports = function (options) {
+function run(options) {
 	options = merge({}, defaultOptions, options);
 	var stream = vfs.src(options.src)
 		.pipe(buildRollup(options))
@@ -15,4 +15,7 @@ module.exports = function (options) {
 		consume(stream);
 	}
 	return stream;
-};
+}
+run.buildRollup = buildRollup;
+
+module.exports = run;
