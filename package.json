@@ -1,6 +1,6 @@
 {
   "name": "metal-tools-build-rollup",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "Tool that can be used to build metal ES6 js files with Rollup",
   "license": "BSD",
   "repository": "metal/metal-tools-build-rollup",
