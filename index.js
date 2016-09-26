@@ -1,21 +1,42 @@
 'use strict';
 
-var buildRollup = require('./lib/pipelines/buildRollup');
+var babel = require('rollup-plugin-babel');
 var defaultOptions = require('./lib/options');
-var consume = require('stream-consume');
 var merge = require('merge');
-var vfs = require('vinyl-fs');
+var nodeResolve = require('rollup-plugin-node-resolve');
+var path = require('path');
+var presetEs2015Rollup = require('babel-preset-es2015-rollup');
+var rollup = require('rollup');
 
-function run(options) {
+module.exports = function(options, opt_callback) {
 	options = merge({}, defaultOptions, options);
-	var stream = vfs.src(options.src)
-		.pipe(buildRollup(options))
-		.pipe(vfs.dest(options.dest));
-	if (!options.skipConsume) {
-		consume(stream);
-	}
-	return stream;
-}
-run.buildRollup = buildRollup;
-
-module.exports = run;
+	rollup.rollup({
+		entry: options.src,
+		plugins: [
+			babel({
+				compact: false,
+				presets: [presetEs2015Rollup]
+			}),
+			nodeResolve({
+				jsnext: true
+			})
+		],
+		onwarn: function(message) {
+			if (message.indexOf('Use of `eval`') === -1 &&
+				  message.indexOf('The `this` keyword') === -1) {
+				console.warn(message);
+			}
+		}
+	}).then(function(bundle) {
+		bundle.write({
+			dest: path.join(options.dest, options.bundleFileName),
+			moduleName: options.globalName,
+			format: 'umd',
+			sourceMap: true
+		}).then(function() {
+			if (opt_callback) {
+				opt_callback(bundle);
+			}
+		});
+	});
+};
