@@ -11,7 +11,7 @@ var rollup = require('rollup-stream');
 var source = require('vinyl-source-stream');
 var sourcemaps = require('gulp-sourcemaps');
 
-module.exports = function(options) {
+function buildRollup(options) {
 	options = merge({}, defaultOptions, options);
 	gulp = options.gulp || gulp;
 	return rollup({
@@ -40,4 +40,9 @@ module.exports = function(options) {
 		.pipe(sourcemaps.init({loadMaps: true}))
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(options.dest));
-};
+}
+
+module.exports = buildRollup;
+module.exports.TASKS = [
+	{name: 'build', fullName: 'build:rollup', handler: buildRollup}
+];
