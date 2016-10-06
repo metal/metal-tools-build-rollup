@@ -40,6 +40,19 @@ describe('Metal Tools - Rollup Build', function() {
 		consume(stream);
 	});
 
+	it('should build js files to a bundle that using the config from "rollupConfig"', function(done) {
+		options.rollupConfig = {
+			moduleName: 'myGlobal'
+		};
+		var stream = metalToolsBuildRollup(options);
+		stream.on('end', function() {
+			var contents = fs.readFileSync('test/fixtures/build/metal.js', 'utf8');
+			assert.notStrictEqual(-1, contents.indexOf('global.myGlobal ='));
+			done();
+		});
+		consume(stream);
+	});
+
 	it('should build js files to a bundle with the name specified by "bundleFileName"', function(done) {
 		options.bundleFileName = 'myBundle.js';
 		var stream = metalToolsBuildRollup(options);

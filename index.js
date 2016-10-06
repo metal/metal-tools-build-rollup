@@ -14,7 +14,7 @@ var sourcemaps = require('gulp-sourcemaps');
 module.exports = function(options) {
 	options = merge({}, defaultOptions, options);
 	gulp = options.gulp || gulp;
-	return rollup({
+	return rollup(merge({
 			entry: options.src,
 			format: 'umd',
 			moduleName: options.globalName,
@@ -34,7 +34,7 @@ module.exports = function(options) {
 					console.warn(message);
 				}
 			}
-		})
+		}, options.rollupConfig))
 		.pipe(source(options.bundleFileName))
 		.pipe(buffer())
 		.pipe(sourcemaps.init({loadMaps: true}))
