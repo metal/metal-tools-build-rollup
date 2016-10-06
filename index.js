@@ -14,6 +14,7 @@ var sourcemaps = require('gulp-sourcemaps');
 module.exports = function(options) {
 	options = merge({}, defaultOptions, options);
 	gulp = options.gulp || gulp;
+	var warned = {};
 	return rollup(merge({
 			entry: options.src,
 			format: 'umd',
@@ -29,9 +30,9 @@ module.exports = function(options) {
 			],
 			sourceMap: true,
 			onwarn: function(message) {
-				if (message.indexOf('Use of `eval`') === -1 &&
-					  message.indexOf('The `this` keyword') === -1) {
+				if (!warned[message] && !shouldSkipMsg(message, options.skipWarnings)) {
 					console.warn(message);
+					warned[message] = true;
 				}
 			}
 		}, options.rollupConfig))
@@ -41,3 +42,11 @@ module.exports = function(options) {
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(options.dest));
 };
+
+function shouldSkipMsg(message, skipWarnings) {
+	for (var i = 0; i < skipWarnings.length; i++) {
+		if (skipWarnings[i].test(message)) {
+			return true;
+		}
+	}
+}

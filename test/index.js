@@ -5,6 +5,7 @@ var consume = require('stream-consume');
 var del = require('del');
 var fs = require('fs');
 var metalToolsBuildRollup = require('../index');
+var sinon = require('sinon');
 
 describe('Metal Tools - Rollup Build', function() {
 	var options;
@@ -14,10 +15,15 @@ describe('Metal Tools - Rollup Build', function() {
       src: 'test/fixtures/js/foo.js',
       dest: 'test/fixtures/build'
     };
+		sinon.stub(console, 'warn');
 		del('test/fixtures/build').then(function() {
 	    done();
 	  });
   });
+
+	afterEach(function() {
+		console.warn.restore();
+	});
 
 	it('should build specified js files into a single bundle and its source map', function(done) {
     var stream = metalToolsBuildRollup(options);
@@ -59,6 +65,25 @@ describe('Metal Tools - Rollup Build', function() {
 		stream.on('end', function() {
 			assert.ok(fs.existsSync('test/fixtures/build/myBundle.js'));
 			assert.ok(fs.existsSync('test/fixtures/build/myBundle.js.map'));
+			done();
+		});
+		consume(stream);
+	});
+
+	it('should print Rollup warnings by default', function(done) {
+		var stream = metalToolsBuildRollup(options);
+		stream.on('end', function() {
+			assert.equal(2, console.warn.callCount);
+			done();
+		});
+		consume(stream);
+	});
+
+	it('should skip printing Rollup warnings specified in "skipWarnings"', function(done) {
+		options.skipWarnings = [/Use of `eval`/];
+		var stream = metalToolsBuildRollup(options);
+		stream.on('end', function() {
+			assert.equal(1, console.warn.callCount);
 			done();
 		});
 		consume(stream);
