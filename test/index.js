@@ -73,7 +73,7 @@ describe('Metal Tools - Rollup Build', function() {
 	it('should print Rollup warnings by default', function(done) {
 		var stream = metalToolsBuildRollup(options);
 		stream.on('end', function() {
-			assert.equal(2, console.warn.callCount);
+			assert.equal(1, console.warn.callCount);
 			done();
 		});
 		consume(stream);
@@ -83,7 +83,7 @@ describe('Metal Tools - Rollup Build', function() {
 		options.skipWarnings = [/Use of `eval`/];
 		var stream = metalToolsBuildRollup(options);
 		stream.on('end', function() {
-			assert.equal(1, console.warn.callCount);
+			assert.equal(0, console.warn.callCount);
 			done();
 		});
 		consume(stream);
