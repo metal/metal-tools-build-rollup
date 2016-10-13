@@ -16,7 +16,7 @@ module.exports = function(options) {
 	gulp = options.gulp || gulp;
 	var warned = {};
 	return rollup(merge({
-			context: 'window',
+			context: 'this',
 			entry: options.src,
 			format: 'umd',
 			moduleName: options.globalName,
