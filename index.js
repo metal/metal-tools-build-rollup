@@ -2,6 +2,7 @@
 
 var babel = require('rollup-plugin-babel');
 var buffer = require('vinyl-buffer');
+var commonjs = require('rollup-plugin-commonjs');
 var defaultOptions = require('./lib/options');
 var gulp = require('gulp');
 var merge = require('merge');
@@ -17,9 +18,9 @@ module.exports = function(options) {
 	var warned = {};
 	return rollup(merge({
 			context: 'this',
-			entry: options.src,
 			format: 'umd',
-			moduleName: options.globalName,
+			input: options.src,
+			name: options.globalName,
 			plugins: [
 				babel({
 					compact: false,
@@ -27,9 +28,10 @@ module.exports = function(options) {
 				}),
 				nodeResolve({
 					jsnext: true
-				})
+				}),
+				commonjs()
 			],
-			sourceMap: true,
+			sourcemap: true,
 			onwarn: function(message) {
 				if (!warned[message] && !shouldSkipMsg(message, options.skipWarnings)) {
 					console.warn(message);
