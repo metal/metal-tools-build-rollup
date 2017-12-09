@@ -48,7 +48,7 @@ describe('Metal Tools - Rollup Build', function() {
 
 	it('should build js files to a bundle that using the config from "rollupConfig"', function(done) {
 		options.rollupConfig = {
-			moduleName: 'myGlobal'
+			name: 'myGlobal'
 		};
 		var stream = metalToolsBuildRollup(options);
 		stream.on('end', function() {
