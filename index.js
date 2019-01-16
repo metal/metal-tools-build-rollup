@@ -17,9 +17,9 @@ module.exports = function(options) {
 	var warned = {};
 	return rollup(merge({
 			context: 'this',
-			entry: options.src,
+			input: options.src,
 			format: 'umd',
-			moduleName: options.globalName,
+			name: options.globalName,
 			plugins: [
 				babel({
 					compact: false,
@@ -29,11 +29,14 @@ module.exports = function(options) {
 					jsnext: true
 				})
 			],
-			sourceMap: true,
-			onwarn: function(message) {
-				if (!warned[message] && !shouldSkipMsg(message, options.skipWarnings)) {
-					console.warn(message);
-					warned[message] = true;
+			sourcemap: true,
+			onwarn: function(warn) {
+				if (!warned[warn] && !shouldSkipMsg(warn, options.skipWarnings)) {
+					console.error(`
+						${warn.message} see ${warn.url}.
+						In ${warn.frame} located in column ${warn.column} and line ${warn.line} on ${warn.file}.
+					`);
+					warned[warn] = true;
 				}
 			}
 		}, options.rollupConfig))
