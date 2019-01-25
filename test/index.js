@@ -15,14 +15,14 @@ describe('Metal Tools - Rollup Build', function() {
       src: 'test/fixtures/js/foo.js',
       dest: 'test/fixtures/build'
     };
-		sinon.stub(console, 'warn');
+		sinon.stub(console, 'error');
 		del('test/fixtures/build').then(function() {
 	    done();
 	  });
   });
 
 	afterEach(function() {
-		console.warn.restore();
+		console.error.restore();
 	});
 
 	it('should build specified js files into a single bundle and its source map', function(done) {
@@ -48,7 +48,7 @@ describe('Metal Tools - Rollup Build', function() {
 
 	it('should build js files to a bundle that using the config from "rollupConfig"', function(done) {
 		options.rollupConfig = {
-			moduleName: 'myGlobal'
+			name: 'myGlobal'
 		};
 		var stream = metalToolsBuildRollup(options);
 		stream.on('end', function() {
@@ -73,7 +73,7 @@ describe('Metal Tools - Rollup Build', function() {
 	it('should print Rollup warnings by default', function(done) {
 		var stream = metalToolsBuildRollup(options);
 		stream.on('end', function() {
-			assert.equal(1, console.warn.callCount);
+			assert.equal(1, console.error.callCount);
 			done();
 		});
 		consume(stream);
@@ -83,7 +83,7 @@ describe('Metal Tools - Rollup Build', function() {
 		options.skipWarnings = [/Use of eval/];
 		var stream = metalToolsBuildRollup(options);
 		stream.on('end', function() {
-			assert.equal(0, console.warn.callCount);
+			assert.equal(0, console.error.callCount);
 			done();
 		});
 		consume(stream);
